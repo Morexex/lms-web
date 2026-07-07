@@ -1,0 +1,24 @@
+# Nuxt (scaffold arrives in M5; ignores ready from day one)
+.nuxt
+.output
+.data
+dist
+node_modules
+.nitro
+.cache
+
+# Environment & secrets — never committed
+.env
+.env.*
+!.env.example
+
+# Testing & tooling
+coverage
+*.log
+.eslintcache
+
+# IDE / OS
+.idea
+.vscode
+.fleet
+.DS_Store

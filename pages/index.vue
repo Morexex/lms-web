@@ -7,6 +7,8 @@ const tokens = [
     { name: 'Warning', class: 'bg-warning' },
     { name: 'Error', class: 'bg-error' },
 ] as const
+
+const { data: platform, isPending, isError, refetch } = usePlatformStatus()
 </script>
 
 <template>
@@ -46,6 +48,30 @@ const tokens = [
                     <v-select label="Role" :items="['Student', 'Tutor', 'Mentor']" />
                 </v-col>
             </v-row>
+        </v-card>
+
+        <v-card class="pa-6">
+            <h2 class="text-h6 font-weight-bold mb-4">API Bridge</h2>
+
+            <div v-if="isPending" class="d-flex align-center ga-3">
+                <v-progress-circular indeterminate size="20" color="primary" />
+                <span class="text-body-2">Contacting lms-api…</span>
+            </div>
+
+            <v-alert v-else-if="isError" type="error" variant="tonal" rounded="lg">
+                Could not reach the API.
+                <template #append>
+                    <v-btn size="small" variant="text" @click="refetch()">Retry</v-btn>
+                </template>
+            </v-alert>
+
+            <div v-else-if="platform" class="d-flex align-center ga-3">
+                <v-chip color="success" variant="tonal" prepend-icon="mdi-check-circle">
+                    {{ platform.status }}
+                </v-chip>
+                <code>{{ platform.service }} · {{ platform.version }}</code>
+                <span class="text-caption text-medium-emphasis">live from lms-api.test</span>
+            </div>
         </v-card>
     </div>
 </template>

@@ -2,7 +2,26 @@ export default defineNuxtConfig({
     compatibilityDate: '2026-07-01',
     devtools: { enabled: true },
 
-    modules: ['vuetify-nuxt-module', '@nuxtjs/tailwindcss', '@nuxt/fonts'],
+    modules: ['vuetify-nuxt-module', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@pinia/nuxt'],
+
+    imports: {
+        dirs: ['composables/**'],   // auto-import nested composables (composables/api/…)
+    },
+
+    runtimeConfig: {
+        public: {
+            apiBase: 'http://lms-api.test',   // override per env via NUXT_PUBLIC_API_BASE
+        },
+    },
+
+    vite: {
+        optimizeDeps: {
+            include: ['@tanstack/vue-query'],
+        },
+        resolve: {
+            dedupe: ['@tanstack/vue-query', 'vue'],
+        },
+    },
 
     css: ['~/assets/css/main.css'],
 

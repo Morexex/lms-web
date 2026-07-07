@@ -12,7 +12,7 @@ export const useAppTheme = () => {
 
     const apply = (name: ThemeName) => {
         preference.value = name
-        vuetifyTheme.global.name.value = name
+        vuetifyTheme.change(name)
     }
 
     const toggle = () => apply(preference.value === 'dark' ? 'light' : 'dark')

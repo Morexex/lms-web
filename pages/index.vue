@@ -9,17 +9,20 @@ const tokens = [
 ] as const
 
 const { data: platform, isPending, isError, refetch } = usePlatformStatus()
+
+const demoStats = [
+    { label: 'Courses', value: 128, icon: 'mdi-book-open-variant' },
+    { label: 'Learners', value: '4,821', icon: 'mdi-account-group', color: 'secondary' },
+    { label: 'Certificates', value: 963, icon: 'mdi-certificate', color: 'accent' },
+] as const
 </script>
 
 <template>
     <div class="d-flex flex-column ga-8">
-        <div>
-            <h1 class="text-h4 font-weight-bold mb-2">Design System Proof Sheet</h1>
-            <p class="text-body-1 text-medium-emphasis">
-                Every token on one screen — headings in Plus Jakarta Sans, body in Inter,
-                <code>code in JetBrains Mono</code>. Toggle the theme and everything must stay legible.
-            </p>
-        </div>
+        <AppPageHeader
+            title="Design System Proof Sheet"
+            subtitle="Every token, primitive, and the API bridge on one screen."
+        />
 
         <v-card class="pa-6">
             <h2 class="text-h6 font-weight-bold mb-4">Palette</h2>
@@ -72,6 +75,24 @@ const { data: platform, isPending, isError, refetch } = usePlatformStatus()
                 <code>{{ platform.service }} · {{ platform.version }}</code>
                 <span class="text-caption text-medium-emphasis">live from lms-api.test</span>
             </div>
+        </v-card>
+
+        <v-row>
+            <v-col v-for="stat in demoStats" :key="stat.label" cols="12" sm="4">
+                <AppStatCard v-bind="stat" />
+            </v-col>
+        </v-row>
+
+        <v-card>
+            <AppEmptyState
+                icon="mdi-school-outline"
+                title="No courses yet"
+                description="This is the AppEmptyState primitive — every empty screen in LUMEN will use it."
+            >
+                <template #action>
+                    <v-btn color="primary">Browse catalog</v-btn>
+                </template>
+            </AppEmptyState>
         </v-card>
     </div>
 </template>

@@ -2,7 +2,9 @@ export default defineNuxtConfig({
     compatibilityDate: '2026-07-01',
     devtools: { enabled: true },
 
-    modules: ['vuetify-nuxt-module', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@pinia/nuxt'],
+    modules: ['vuetify-nuxt-module', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@pinia/nuxt', '@nuxt/eslint'],
+
+    components: [{ path: '~/components', pathPrefix: false }],
 
     imports: {
         dirs: ['composables/**'],   // auto-import nested composables (composables/api/…)

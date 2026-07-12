@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { isDark, toggle } = useAppTheme()
+const { isAuthenticated } = storeToRefs(useAuthStore())
 </script>
 
 <template>
@@ -8,6 +9,9 @@ const { isDark, toggle } = useAppTheme()
             <v-container class="d-flex align-center">
                 <span class="font-heading text-h6 font-weight-bold text-primary">LUMEN</span>
                 <v-spacer />
+                <ClientOnly>
+                    <InstitutionSwitcher v-if="isAuthenticated" class="mr-2" />
+                </ClientOnly>
                 <v-btn
                     :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
                     variant="text"

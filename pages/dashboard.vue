@@ -29,6 +29,7 @@ async function resend() {
                 <p class="text-body-1 text-medium-emphasis">{{ auth.user?.email }}</p>
             </div>
             <v-spacer />
+            <v-btn to="/people" variant="text">People</v-btn>
             <v-btn variant="tonal" color="primary" prepend-icon="mdi-logout" @click="logout">Sign out</v-btn>
         </div>
 

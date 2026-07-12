@@ -62,5 +62,21 @@ export default defineNuxtPlugin(() => {
         },
     )
 
+    api.interceptors.request.use((cfg) => {
+        if (import.meta.client) {
+            const auth = useAuthStore()
+            if (auth.accessToken) {
+                cfg.headers.Authorization = `Bearer ${auth.accessToken}`
+            }
+
+            const institution = useInstitutionStore()
+            if (institution.activeSlug) {
+                cfg.headers['X-Institution'] = institution.activeSlug
+            }
+        }
+
+        return cfg
+    })
+
     return { provide: { api } }
 })

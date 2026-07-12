@@ -16,6 +16,16 @@ const [name] = defineField('name')
 const [email] = defineField('email')
 const [password] = defineField('password')
 const [passwordConfirmation] = defineField('password_confirmation')
+const [dateOfBirth] = defineField('date_of_birth')
+const [guardianName] = defineField('guardian_name')
+const [guardianEmail] = defineField('guardian_email')
+
+const isMinor = computed(() => {
+    if (!dateOfBirth.value) return false
+    const dob = new Date(dateOfBirth.value)
+    const age = (Date.now() - dob.getTime()) / (365.25 * 24 * 3600 * 1000)
+    return age < 18
+})
 
 const onSubmit = handleSubmit(async (values) => {
     loading.value = true
@@ -43,6 +53,15 @@ const onSubmit = handleSubmit(async (values) => {
             <v-text-field v-model="email" label="Email" type="email" autocomplete="email" :error-messages="errors.email" class="mt-2" />
             <v-text-field v-model="password" label="Password" type="password" autocomplete="new-password" :error-messages="errors.password" class="mt-2" />
             <v-text-field v-model="passwordConfirmation" label="Confirm password" type="password" autocomplete="new-password" :error-messages="errors.password_confirmation" class="mt-2" />
+            <v-text-field v-model="dateOfBirth" label="Date of birth" type="date" :error-messages="errors.date_of_birth" class="mt-2" />
+
+            <template v-if="isMinor">
+                <v-alert type="info" variant="tonal" density="compact" class="mt-2 mb-1">
+                    A parent or guardian must approve accounts for under-18s.
+                </v-alert>
+                <v-text-field v-model="guardianName" label="Parent / guardian name" :error-messages="errors.guardian_name" class="mt-2" />
+                <v-text-field v-model="guardianEmail" label="Parent / guardian email" type="email" :error-messages="errors.guardian_email" class="mt-2" />
+            </template>
 
             <v-btn type="submit" color="primary" block size="large" :loading="loading" class="mt-4">Create account</v-btn>
         </v-form>

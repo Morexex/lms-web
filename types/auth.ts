@@ -28,6 +28,9 @@ export const registerSchema = z
         email: z.string().min(1, 'Email is required').email('Enter a valid email'),
         password: z.string().min(8, 'At least 8 characters'),
         password_confirmation: z.string().min(1, 'Please confirm your password'),
+        date_of_birth: z.string().min(1, 'Date of birth is required'),
+        guardian_name: z.string().optional(),
+        guardian_email: z.string().optional(),
     })
     .refine((data) => data.password === data.password_confirmation, {
         message: 'Passwords do not match',

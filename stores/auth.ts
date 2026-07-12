@@ -29,6 +29,9 @@ export const useAuthStore = defineStore('auth', () => {
         email: string
         password: string
         password_confirmation: string
+        date_of_birth: string
+        guardian_name?: string
+        guardian_email?: string
     }): Promise<void> {
         const { data } = await useNuxtApp().$api.post<{ data: SessionPayload }>('/api/v1/auth/register', payload)
         setSession(data.data)

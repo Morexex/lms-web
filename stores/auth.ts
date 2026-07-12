@@ -5,9 +5,11 @@ export const useAuthStore = defineStore('auth', () => {
     const accessToken = ref<string | null>(null)
     const user = ref<AuthUser | null>(null)
     const ready = ref(false) // has a session-restore attempt completed?
+    const impersonator = ref<{ id: string; name: string } | null>(null)
 
     const isAuthenticated = computed(() => user.value !== null)
     const isVerified = computed(() => user.value?.email_verified === true)
+    const isImpersonating = computed(() => impersonator.value !== null)
 
     function setSession(payload: SessionPayload): void {
         accessToken.value = payload.access_token
@@ -68,6 +70,22 @@ export const useAuthStore = defineStore('auth', () => {
         await useNuxtApp().$api.post('/api/v1/auth/email/verification-notification')
     }
 
+    /**
+     * Swap the session to an impersonated user. The admin's httpOnly refresh
+     * cookie is untouched, so stopImpersonation() restores them via refresh().
+     */
+    async function beginImpersonation(accessTokenValue: string, admin: { id: string; name: string }): Promise<void> {
+        accessToken.value = accessTokenValue
+        impersonator.value = admin
+        const { data } = await useNuxtApp().$api.get<{ data: AuthUser }>('/api/v1/auth/me')
+        user.value = data.data
+    }
+
+    async function stopImpersonation(): Promise<void> {
+        impersonator.value = null
+        await refresh() // restores the admin session from their refresh cookie
+    }
+
     /** Restore a session on boot via the refresh cookie. Runs at most once. */
     async function init(): Promise<void> {
         if (ready.value) {
@@ -87,8 +105,10 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken,
         user,
         ready,
+        impersonator,
         isAuthenticated,
         isVerified,
+        isImpersonating,
         setSession,
         clear,
         login,
@@ -98,6 +118,8 @@ export const useAuthStore = defineStore('auth', () => {
         forgotPassword,
         resetPassword,
         resendVerification,
+        beginImpersonation,
+        stopImpersonation,
         init,
     }
 })

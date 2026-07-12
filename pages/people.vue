@@ -8,11 +8,33 @@ const { data: members, isLoading: loadingMembers } = useMembers()
 const { data: invitations } = useInvitations()
 const invite = useInviteMember()
 const revoke = useRevokeInvitation()
+const changeRole = useChangeMemberRole()
+const suspendMember = useSuspendMember()
+const reactivateMember = useReactivateMember()
+const removeMember = useRemoveMember()
 const { message, handle, reset } = useApiErrors()
 
 const email = ref('')
 const role = ref('student')
 const roles = ['institution_admin', 'tutor', 'mentor', 'student']
+
+async function setRole(id: string, newRole: string): Promise<void> {
+    reset()
+    try {
+        await changeRole.mutateAsync({ id, role: newRole })
+    } catch (error) {
+        handle(error)
+    }
+}
+
+async function act(fn: () => Promise<unknown>): Promise<void> {
+    reset()
+    try {
+        await fn()
+    } catch (error) {
+        handle(error)
+    }
+}
 
 async function sendInvite(): Promise<void> {
     reset()
@@ -65,7 +87,57 @@ async function sendInvite(): Promise<void> {
                         :title="m.user.name"
                         :subtitle="m.user.email"
                         prepend-icon="mdi-account-circle"
-                    />
+                    >
+                        <template #append>
+                            <div class="d-flex align-center ga-2">
+                                <v-chip
+                                    v-if="m.status === 'suspended'"
+                                    color="error"
+                                    size="x-small"
+                                    variant="tonal"
+                                >
+                                    suspended
+                                </v-chip>
+                                <template v-if="can('members.manage')">
+                                    <v-select
+                                        :model-value="m.roles[0] ?? 'student'"
+                                        :items="roles"
+                                        density="compact"
+                                        hide-details
+                                        variant="outlined"
+                                        style="max-width: 180px"
+                                        @update:model-value="(r) => setRole(m.id, r)"
+                                    />
+                                    <v-btn
+                                        v-if="m.status !== 'suspended'"
+                                        icon="mdi-pause"
+                                        size="small"
+                                        variant="text"
+                                        color="warning"
+                                        title="Suspend"
+                                        @click="act(() => suspendMember.mutateAsync(m.id))"
+                                    />
+                                    <v-btn
+                                        v-else
+                                        icon="mdi-play"
+                                        size="small"
+                                        variant="text"
+                                        color="success"
+                                        title="Reactivate"
+                                        @click="act(() => reactivateMember.mutateAsync(m.id))"
+                                    />
+                                    <v-btn
+                                        icon="mdi-delete"
+                                        size="small"
+                                        variant="text"
+                                        color="error"
+                                        title="Remove"
+                                        @click="act(() => removeMember.mutateAsync(m.id))"
+                                    />
+                                </template>
+                            </div>
+                        </template>
+                    </v-list-item>
                 </v-list>
             </v-card>
         </template>

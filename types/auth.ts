@@ -8,6 +8,10 @@ export interface AuthUser {
     email_verified: boolean
     roles: string[]
     permissions: string[]
+    bio: string | null
+    status: string
+    is_minor: boolean
+    requires_guardian_consent: boolean
 }
 
 export interface SessionPayload {

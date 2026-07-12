@@ -18,6 +18,7 @@ export interface Member {
     id: string
     status: string
     joined_at: string | null
+    roles: string[]
     user: { id: string; name: string; email: string }
 }
 

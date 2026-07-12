@@ -1,6 +1,12 @@
 <script setup lang="ts">
+const auth = useAuthStore()
 const { isDark, toggle } = useAppTheme()
-const { isAuthenticated } = storeToRefs(useAuthStore())
+const { isAuthenticated } = storeToRefs(auth)
+
+async function signOut(): Promise<void> {
+    await auth.logout()
+    await navigateTo('/auth/login')
+}
 </script>
 
 <template>
@@ -18,8 +24,27 @@ const { isAuthenticated } = storeToRefs(useAuthStore())
                     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                     @click="toggle"
                 />
+                <ClientOnly>
+                    <v-menu v-if="isAuthenticated">
+                        <template #activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-account-circle" variant="text" aria-label="Account" />
+                        </template>
+                        <v-list>
+                            <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard" title="Dashboard" />
+                            <v-list-item to="/people" prepend-icon="mdi-account-group" title="People" />
+                            <v-list-item to="/profile" prepend-icon="mdi-account" title="Profile" />
+                            <v-list-item to="/platform/users" prepend-icon="mdi-shield-account" title="Admin: Users" />
+                            <v-divider />
+                            <v-list-item prepend-icon="mdi-logout" title="Sign out" @click="signOut" />
+                        </v-list>
+                    </v-menu>
+                </ClientOnly>
             </v-container>
         </v-app-bar>
+
+        <ClientOnly>
+            <ImpersonationBanner />
+        </ClientOnly>
 
         <v-main class="bg-background">
             <v-container class="py-10">

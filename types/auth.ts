@@ -6,6 +6,8 @@ export interface AuthUser {
     email: string
     timezone: string
     email_verified: boolean
+    roles: string[]
+    permissions: string[]
 }
 
 export interface SessionPayload {

@@ -46,5 +46,13 @@ async function resend() {
                 Milestone 6 is complete end to end. Your session survives a page refresh via silent token rotation.
             </p>
         </v-card>
+
+        <v-card class="pa-6">
+            <h2 class="text-subtitle-1 font-weight-bold mb-3">Your access</h2>
+            <div v-if="auth.user?.roles.length" class="d-flex flex-wrap ga-2">
+                <v-chip v-for="role in auth.user.roles" :key="role" color="primary" size="small" variant="tonal">{{ role }}</v-chip>
+            </div>
+            <p v-else class="text-body-2 text-medium-emphasis">No roles assigned yet — these arrive once you join an institution.</p>
+        </v-card>
     </div>
 </template>

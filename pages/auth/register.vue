@@ -1,0 +1,55 @@
+<script setup lang="ts">
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import { registerSchema } from '~/types/auth'
+
+definePageMeta({ layout: 'auth', middleware: 'guest' })
+
+const auth = useAuthStore()
+const { message, handle, reset } = useApiErrors()
+const loading = ref(false)
+
+const { defineField, handleSubmit, setErrors, errors } = useForm({
+    validationSchema: toTypedSchema(registerSchema),
+})
+const [name] = defineField('name')
+const [email] = defineField('email')
+const [password] = defineField('password')
+const [passwordConfirmation] = defineField('password_confirmation')
+
+const onSubmit = handleSubmit(async (values) => {
+    loading.value = true
+    reset()
+    try {
+        await auth.register(values)
+        await navigateTo('/dashboard')
+    } catch (error) {
+        handle(error, setErrors)
+    } finally {
+        loading.value = false
+    }
+})
+</script>
+
+<template>
+    <v-card class="pa-6 pa-sm-8">
+        <h1 class="text-h5 font-weight-bold mb-1">Create your account</h1>
+        <p class="text-body-2 text-medium-emphasis mb-6">Start learning in minutes.</p>
+
+        <v-alert v-if="message" type="error" variant="tonal" density="compact" class="mb-4">{{ message }}</v-alert>
+
+        <v-form @submit.prevent="onSubmit">
+            <v-text-field v-model="name" label="Full name" autocomplete="name" :error-messages="errors.name" />
+            <v-text-field v-model="email" label="Email" type="email" autocomplete="email" :error-messages="errors.email" class="mt-2" />
+            <v-text-field v-model="password" label="Password" type="password" autocomplete="new-password" :error-messages="errors.password" class="mt-2" />
+            <v-text-field v-model="passwordConfirmation" label="Confirm password" type="password" autocomplete="new-password" :error-messages="errors.password_confirmation" class="mt-2" />
+
+            <v-btn type="submit" color="primary" block size="large" :loading="loading" class="mt-4">Create account</v-btn>
+        </v-form>
+
+        <p class="text-body-2 text-center text-medium-emphasis mt-6">
+            Already have an account?
+            <NuxtLink to="/auth/login" class="text-secondary text-decoration-none font-weight-medium">Sign in</NuxtLink>
+        </p>
+    </v-card>
+</template>

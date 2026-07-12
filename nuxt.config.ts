@@ -12,7 +12,16 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            apiBase: 'http://lms-api.test',   // override per env via NUXT_PUBLIC_API_BASE
+            // SSR talks straight to the backend; the browser goes through the
+            // same-origin proxy so the httpOnly refresh cookie is first-party.
+            apiBaseServer: process.env.NUXT_PUBLIC_API_BASE_SERVER || 'http://lms-api.test',
+            apiBaseClient: '',
+        },
+    },
+
+    nitro: {
+        devProxy: {
+            '/api': { target: 'http://lms-api.test/api', changeOrigin: true },
         },
     },
 

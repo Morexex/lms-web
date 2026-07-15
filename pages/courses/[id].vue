@@ -29,8 +29,14 @@ async function onSubmit(data: Record<string, unknown>): Promise<void> {
             <div class="d-flex align-center mb-6">
                 <h1 class="text-h4 font-weight-bold">Edit course</h1>
                 <v-spacer />
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-format-list-bulleted" :to="`/courses/${id}/curriculum`" class="mr-3">
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-format-list-bulleted" :to="`/courses/${id}/curriculum`" class="mr-2">
                     Curriculum
+                </v-btn>
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-clipboard-text" :to="`/courses/${id}/quizzes`" class="mr-2">
+                    Quizzes
+                </v-btn>
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-file-document-edit" :to="`/courses/${id}/assignments`" class="mr-3">
+                    Assignments
                 </v-btn>
                 <v-chip :color="course.status === 'published' ? 'success' : 'warning'" variant="tonal">
                     {{ course.status }}

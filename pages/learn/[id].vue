@@ -12,6 +12,10 @@ const { message: enrollError, handle: handleEnroll, reset } = useApiErrors()
 const selectedLessonId = ref<string | null>(null)
 const { data: lesson, isError: lessonLocked } = useLearnLesson(courseId, selectedLessonId)
 
+const enrolled = computed(() => curriculum.value?.enrolled ?? false)
+const { data: quizzesTodo } = useQuizzesTodo(courseId, enrolled)
+const { data: assignmentsTodo } = useAssignmentsTodo(courseId, enrolled)
+
 // Auto-select the first lesson once the curriculum loads.
 watchEffect(() => {
     if (!selectedLessonId.value && curriculum.value?.sections.length) {
@@ -163,6 +167,69 @@ async function doEnroll(): Promise<void> {
                             </div>
                         </template>
                         <p v-else class="text-body-2 text-medium-emphasis">Select a lesson to begin.</p>
+                    </v-card>
+                </v-col>
+            </v-row>
+
+            <!-- Assessments -->
+            <v-row v-if="enrolled && (quizzesTodo?.length || assignmentsTodo?.length)" class="mt-2">
+                <v-col v-if="quizzesTodo?.length" cols="12" md="6">
+                    <v-card>
+                        <v-card-title class="text-subtitle-1 font-weight-bold">
+                            <v-icon icon="mdi-clipboard-text" size="small" class="mr-1" /> Quizzes
+                        </v-card-title>
+                        <v-list density="compact">
+                            <v-list-item
+                                v-for="quiz in quizzesTodo"
+                                :key="quiz.id"
+                                :title="quiz.title"
+                                :to="`/quizzes/${quiz.id}`"
+                            >
+                                <template #subtitle>
+                                    {{ quiz.question_count }} questions · pass {{ quiz.passing_score }}%
+                                </template>
+                                <template #append>
+                                    <v-chip
+                                        v-if="quiz.best_score !== null"
+                                        color="success"
+                                        variant="tonal"
+                                        size="x-small"
+                                    >
+                                        best {{ quiz.best_score }}
+                                    </v-chip>
+                                    <v-icon v-else icon="mdi-chevron-right" size="small" />
+                                </template>
+                            </v-list-item>
+                        </v-list>
+                    </v-card>
+                </v-col>
+
+                <v-col v-if="assignmentsTodo?.length" cols="12" md="6">
+                    <v-card>
+                        <v-card-title class="text-subtitle-1 font-weight-bold">
+                            <v-icon icon="mdi-file-document-edit" size="small" class="mr-1" /> Assignments
+                        </v-card-title>
+                        <v-list density="compact">
+                            <v-list-item
+                                v-for="a in assignmentsTodo"
+                                :key="a.id"
+                                :title="a.title"
+                                :to="`/assignments/${a.id}`"
+                            >
+                                <template #subtitle>{{ a.points }} points</template>
+                                <template #append>
+                                    <v-chip
+                                        v-if="a.submission"
+                                        :color="a.submission.status === 'graded' ? 'success' : 'info'"
+                                        variant="tonal"
+                                        size="x-small"
+                                    >
+                                        {{ a.submission.status === 'graded' ? `${a.submission.score} pts` : 'submitted' }}
+                                    </v-chip>
+                                    <v-icon v-else icon="mdi-chevron-right" size="small" />
+                                </template>
+                            </v-list-item>
+                        </v-list>
                     </v-card>
                 </v-col>
             </v-row>

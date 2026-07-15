@@ -48,6 +48,8 @@ async function resend() {
             </p>
         </v-card>
 
+        <UpcomingSessions />
+
         <v-card class="pa-6">
             <h2 class="text-subtitle-1 font-weight-bold mb-3">Your access</h2>
             <div v-if="auth.user?.roles.length" class="d-flex flex-wrap ga-2">

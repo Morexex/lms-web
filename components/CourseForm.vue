@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Course } from '~/types/catalog'
+import type { MediaItem } from '~/types/media'
 
 const props = defineProps<{ course?: Course; loading?: boolean }>()
 const emit = defineEmits<{ submit: [data: Record<string, unknown>] }>()
@@ -14,6 +15,13 @@ const categoryId = ref<string | null>(props.course?.category?.id ?? null)
 const isFree = ref(props.course?.is_free ?? true)
 const price = ref(props.course?.price_amount ? props.course.price_amount / 100 : 0)
 const currency = ref(props.course?.price_currency ?? 'KES')
+const coverMediaId = ref<string | null>(props.course?.cover_media_id ?? null)
+const coverUrl = ref<string | null>(props.course?.cover_image_url ?? null)
+
+function onCoverUploaded(media: MediaItem): void {
+    coverMediaId.value = media.id
+    coverUrl.value = media.url
+}
 
 const levels = [
     { title: 'All levels', value: 'all_levels' },
@@ -34,12 +42,19 @@ function submit(): void {
         is_free: isFree.value,
         price_amount: isFree.value ? null : Math.round(price.value * 100),
         price_currency: isFree.value ? null : currency.value,
+        cover_media_id: coverMediaId.value,
     })
 }
 </script>
 
 <template>
     <v-card class="pa-6">
+        <div class="mb-4">
+            <div class="text-subtitle-2 font-weight-bold mb-2">Cover image</div>
+            <v-img v-if="coverUrl" :src="coverUrl" height="140" cover rounded="lg" class="mb-2" style="max-width: 260px" />
+            <MediaUpload accept="image/*" label="Upload cover image" @uploaded="onCoverUploaded" />
+        </div>
+
         <v-text-field v-model="title" label="Course title" />
         <v-text-field v-model="summary" label="Short summary" counter="280" class="mt-2" />
         <v-textarea v-model="description" label="Description" rows="4" auto-grow class="mt-2" />

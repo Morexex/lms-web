@@ -3,6 +3,7 @@ export interface ContentBlock {
     type: string
     position: number
     content: Record<string, unknown> | null
+    media_url?: string | null
 }
 
 export interface Lesson {

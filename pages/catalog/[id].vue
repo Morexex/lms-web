@@ -28,6 +28,7 @@ async function doEnroll(): Promise<void> {
         </v-alert>
 
         <template v-else>
+            <v-img v-if="course.cover_image_url" :src="course.cover_image_url" height="240" cover rounded="lg" class="mb-4" />
             <div class="text-caption text-medium-emphasis mb-1">{{ course.category?.name ?? 'Uncategorised' }}</div>
             <h1 class="text-h4 font-weight-bold mb-2">{{ course.title }}</h1>
             <div class="d-flex align-center ga-3 mb-6">

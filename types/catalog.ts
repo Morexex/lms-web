@@ -12,7 +12,8 @@ export interface Course {
     description: string | null
     level: string
     status: string
-    cover_image_path: string | null
+    cover_media_id: string | null
+    cover_image_url: string | null
     is_free: boolean
     price_amount: number | null
     price_currency: string | null

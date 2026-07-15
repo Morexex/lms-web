@@ -42,7 +42,8 @@ const levels = [
             <v-row>
                 <v-col v-for="c in courses" :key="c.id" cols="12" sm="6" md="4">
                     <v-card class="h-100 d-flex flex-column" :to="`/catalog/${c.id}`" hover>
-                        <v-sheet color="primary" height="120" class="d-flex align-center justify-center">
+                        <v-img v-if="c.cover_image_url" :src="c.cover_image_url" height="120" cover />
+                        <v-sheet v-else color="primary" height="120" class="d-flex align-center justify-center">
                             <v-icon icon="mdi-book-open-variant" color="white" size="40" />
                         </v-sheet>
                         <v-card-item>

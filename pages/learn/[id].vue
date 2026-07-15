@@ -100,6 +100,22 @@ async function doEnroll(): Promise<void> {
                                         title="Lesson video"
                                     />
                                 </div>
+                                <video
+                                    v-else-if="block.type === 'video' && block.media_url"
+                                    :src="block.media_url"
+                                    controls
+                                    style="width: 100%; border-radius: 8px"
+                                />
+                                <v-btn
+                                    v-else-if="block.type === 'resource'"
+                                    :href="block.media_url ?? undefined"
+                                    target="_blank"
+                                    color="primary"
+                                    variant="tonal"
+                                    prepend-icon="mdi-file-download"
+                                >
+                                    {{ String(block.content?.filename ?? 'Download resource') }}
+                                </v-btn>
                             </div>
                             <p v-if="(lesson.blocks ?? []).length === 0" class="text-body-2 text-medium-emphasis">
                                 This lesson has no content yet.

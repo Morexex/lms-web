@@ -1,0 +1,129 @@
+<script setup lang="ts">
+import type { Lesson } from '~/types/learning'
+
+definePageMeta({ middleware: 'auth' })
+
+const courseId = useRoute().params.id as string
+const { data: curriculum, isLoading } = useLearnCurriculum(courseId)
+const enroll = useEnroll()
+const { message: enrollError, handle: handleEnroll, reset } = useApiErrors()
+
+const selectedLessonId = ref<string | null>(null)
+const { data: lesson, isError: lessonLocked } = useLearnLesson(courseId, selectedLessonId)
+
+// Auto-select the first lesson once the curriculum loads.
+watchEffect(() => {
+    if (!selectedLessonId.value && curriculum.value?.sections.length) {
+        const first = curriculum.value.sections.find((s) => s.lessons.length)?.lessons[0]
+        if (first) selectedLessonId.value = first.id
+    }
+})
+
+function canOpen(l: Lesson): boolean {
+    return (curriculum.value?.enrolled ?? false) || l.is_preview
+}
+
+async function doEnroll(): Promise<void> {
+    reset()
+    try {
+        await enroll.mutateAsync(courseId)
+    } catch (error) {
+        handleEnroll(error)
+    }
+}
+</script>
+
+<template>
+    <div>
+        <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/learning" class="mb-2">My learning</v-btn>
+        <v-progress-linear v-if="isLoading" indeterminate color="primary" />
+
+        <template v-if="curriculum">
+            <div class="d-flex align-center mb-4">
+                <h1 class="text-h5 font-weight-bold">{{ curriculum.course.title }}</h1>
+                <v-spacer />
+                <v-btn v-if="!curriculum.enrolled" color="primary" :loading="enroll.isPending.value" @click="doEnroll">
+                    Enroll
+                </v-btn>
+                <v-chip v-else color="success" variant="tonal">Enrolled</v-chip>
+            </div>
+            <v-alert v-if="enrollError" type="warning" variant="tonal" density="compact" class="mb-4">{{ enrollError }}</v-alert>
+
+            <v-row>
+                <!-- Curriculum sidebar -->
+                <v-col cols="12" md="4">
+                    <v-card>
+                        <v-list density="compact">
+                            <template v-for="section in curriculum.sections" :key="section.id">
+                                <v-list-subheader class="font-weight-bold">{{ section.title }}</v-list-subheader>
+                                <v-list-item
+                                    v-for="l in section.lessons"
+                                    :key="l.id"
+                                    :active="l.id === selectedLessonId"
+                                    :title="l.title"
+                                    @click="canOpen(l) ? (selectedLessonId = l.id) : null"
+                                >
+                                    <template #prepend>
+                                        <v-icon :icon="canOpen(l) ? 'mdi-play-circle-outline' : 'mdi-lock-outline'" size="small" />
+                                    </template>
+                                    <template #append>
+                                        <v-chip v-if="l.is_preview && !curriculum.enrolled" size="x-small" color="accent" variant="tonal">
+                                            preview
+                                        </v-chip>
+                                    </template>
+                                </v-list-item>
+                            </template>
+                        </v-list>
+                    </v-card>
+                </v-col>
+
+                <!-- Lesson content -->
+                <v-col cols="12" md="8">
+                    <v-card class="pa-6" min-height="300">
+                        <template v-if="lessonLocked">
+                            <div class="text-center py-8">
+                                <v-icon icon="mdi-lock" size="48" color="medium-emphasis" class="mb-3" />
+                                <p class="text-body-1 mb-4">Enroll to unlock this lesson.</p>
+                                <v-btn color="primary" :loading="enroll.isPending.value" @click="doEnroll">Enroll now</v-btn>
+                            </div>
+                        </template>
+                        <template v-else-if="lesson">
+                            <h2 class="text-h6 font-weight-bold mb-4">{{ lesson.title }}</h2>
+                            <div v-for="block in lesson.blocks ?? []" :key="block.id" class="mb-6">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <div v-if="block.type === 'rich_text'" class="text-body-1" v-html="block.content?.html" />
+                                <div v-else-if="block.type === 'embed'" class="embed-wrap">
+                                    <iframe
+                                        :src="toEmbedUrl(String(block.content?.url ?? ''))"
+                                        frameborder="0"
+                                        allowfullscreen
+                                        title="Lesson video"
+                                    />
+                                </div>
+                            </div>
+                            <p v-if="(lesson.blocks ?? []).length === 0" class="text-body-2 text-medium-emphasis">
+                                This lesson has no content yet.
+                            </p>
+                        </template>
+                        <p v-else class="text-body-2 text-medium-emphasis">Select a lesson to begin.</p>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </template>
+    </div>
+</template>
+
+<style scoped>
+.embed-wrap {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+}
+.embed-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+</style>

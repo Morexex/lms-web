@@ -3,6 +3,18 @@ definePageMeta({ middleware: 'auth' })
 
 const id = useRoute().params.id as string
 const { data: course, isLoading, isError } = useCatalogCourse(id)
+const enroll = useEnroll()
+const { message: enrollMessage, handle: handleEnroll, reset } = useApiErrors()
+
+async function doEnroll(): Promise<void> {
+    reset()
+    try {
+        await enroll.mutateAsync(id)
+        await navigateTo(`/learn/${id}`)
+    } catch (error) {
+        handleEnroll(error)
+    }
+}
 </script>
 
 <template>
@@ -28,10 +40,10 @@ const { data: course, isLoading, isError } = useCatalogCourse(id)
                 <p class="text-body-2" style="white-space: pre-wrap">{{ course.description }}</p>
             </v-card>
 
-            <v-btn color="primary" size="large" disabled>
-                Enroll — coming soon
+            <v-alert v-if="enrollMessage" type="warning" variant="tonal" density="compact" class="mb-3">{{ enrollMessage }}</v-alert>
+            <v-btn color="primary" size="large" :loading="enroll.isPending.value" @click="doEnroll">
+                {{ course.is_free ? 'Enroll for free' : 'Enroll' }}
             </v-btn>
-            <p class="text-caption text-medium-emphasis mt-2">Enrollment arrives with the Learning module.</p>
         </template>
     </div>
 </template>

@@ -42,6 +42,9 @@ async function onSubmit(data: Record<string, unknown>): Promise<void> {
                 <v-btn variant="tonal" color="primary" prepend-icon="mdi-video" :to="`/courses/${id}/live-sessions`" class="mr-2">
                     Live
                 </v-btn>
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-forum" :to="`/courses/${id}/discussion`" class="mr-2">
+                    Discussion
+                </v-btn>
                 <v-btn variant="tonal" color="primary" prepend-icon="mdi-bullhorn" class="mr-3" @click="announcing = true">
                     Announce
                 </v-btn>

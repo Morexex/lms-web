@@ -52,7 +52,12 @@ async function doEnroll(): Promise<void> {
                 <v-btn v-if="!curriculum.enrolled" color="primary" :loading="enroll.isPending.value" @click="doEnroll">
                     Enroll
                 </v-btn>
-                <v-chip v-else-if="curriculum.completed" color="success" variant="flat" prepend-icon="mdi-check-decagram">Completed</v-chip>
+                <template v-else-if="curriculum.completed">
+                    <v-btn color="accent" variant="flat" prepend-icon="mdi-certificate" to="/certificates" class="mr-2">
+                        View certificate
+                    </v-btn>
+                    <v-chip color="success" variant="flat" prepend-icon="mdi-check-decagram">Completed</v-chip>
+                </template>
                 <v-chip v-else color="success" variant="tonal">Enrolled</v-chip>
             </div>
             <v-alert v-if="enrollError" type="warning" variant="tonal" density="compact" class="mb-4">{{ enrollError }}</v-alert>

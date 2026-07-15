@@ -90,6 +90,14 @@ async function sendInvite(): Promise<void> {
                     >
                         <template #append>
                             <div class="d-flex align-center ga-2">
+                                <v-btn
+                                    icon="mdi-message-text-outline"
+                                    size="small"
+                                    variant="text"
+                                    color="primary"
+                                    title="Message"
+                                    :to="`/messages?to=${m.user.id}`"
+                                />
                                 <v-chip
                                     v-if="m.status === 'suspended'"
                                     color="error"

@@ -25,6 +25,9 @@ async function signOut(): Promise<void> {
                     @click="toggle"
                 />
                 <ClientOnly>
+                    <NotificationBell v-if="isAuthenticated" class="mr-1" />
+                </ClientOnly>
+                <ClientOnly>
                     <v-menu v-if="isAuthenticated">
                         <template #activator="{ props }">
                             <v-btn v-bind="props" icon="mdi-account-circle" variant="text" aria-label="Account" />
@@ -33,8 +36,10 @@ async function signOut(): Promise<void> {
                             <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard" title="Dashboard" />
                             <v-list-item to="/catalog" prepend-icon="mdi-book-open-variant" title="Catalog" />
                             <v-list-item to="/learning" prepend-icon="mdi-play-circle" title="My learning" />
+                            <v-list-item to="/messages" prepend-icon="mdi-message-text" title="Messages" />
                             <v-list-item to="/certificates" prepend-icon="mdi-certificate" title="Certificates" />
                             <v-list-item to="/courses" prepend-icon="mdi-bookshelf" title="Manage courses" />
+                            <v-list-item to="/announcements" prepend-icon="mdi-bullhorn" title="Announcements" />
                             <v-list-item to="/people" prepend-icon="mdi-account-group" title="People" />
                             <v-list-item to="/profile" prepend-icon="mdi-account" title="Profile" />
                             <v-list-item to="/platform/users" prepend-icon="mdi-shield-account" title="Admin: Users" />

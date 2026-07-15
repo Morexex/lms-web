@@ -8,6 +8,7 @@ const save = useSaveCourse()
 const status = useCourseStatus()
 const { message, handle, reset } = useApiErrors()
 const saved = ref(false)
+const announcing = ref(false)
 
 async function onSubmit(data: Record<string, unknown>): Promise<void> {
     reset()
@@ -35,8 +36,11 @@ async function onSubmit(data: Record<string, unknown>): Promise<void> {
                 <v-btn variant="tonal" color="primary" prepend-icon="mdi-clipboard-text" :to="`/courses/${id}/quizzes`" class="mr-2">
                     Quizzes
                 </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-file-document-edit" :to="`/courses/${id}/assignments`" class="mr-3">
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-file-document-edit" :to="`/courses/${id}/assignments`" class="mr-2">
                     Assignments
+                </v-btn>
+                <v-btn variant="tonal" color="primary" prepend-icon="mdi-bullhorn" class="mr-3" @click="announcing = true">
+                    Announce
                 </v-btn>
                 <v-chip :color="course.status === 'published' ? 'success' : 'warning'" variant="tonal">
                     {{ course.status }}
@@ -63,5 +67,7 @@ async function onSubmit(data: Record<string, unknown>): Promise<void> {
                 <v-btn color="grey" variant="tonal" @click="status.mutate({ id, action: 'archive' })">Archive</v-btn>
             </div>
         </template>
+
+        <CourseAnnounceDialog v-if="announcing" :course-id="id" @close="announcing = false" />
     </div>
 </template>

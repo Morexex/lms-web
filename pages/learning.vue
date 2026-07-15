@@ -27,8 +27,15 @@ const { data: enrollments, isLoading } = useMyEnrollments()
                             <v-card-title class="text-body-1 font-weight-bold" style="white-space: normal">{{ e.course.title }}</v-card-title>
                         </v-card-item>
                         <v-card-text class="text-body-2 text-medium-emphasis flex-grow-1">{{ e.course.summary }}</v-card-text>
+                        <div class="px-4">
+                            <div class="d-flex align-center justify-space-between mb-1">
+                                <span class="text-caption text-medium-emphasis">{{ e.completed_at ? 'Completed' : 'Progress' }}</span>
+                                <span class="text-caption font-weight-medium">{{ e.progress }}%</span>
+                            </div>
+                            <v-progress-linear :model-value="e.progress" :color="e.completed_at ? 'success' : 'primary'" height="6" rounded />
+                        </div>
                         <v-card-actions>
-                            <v-btn color="primary" variant="text">Continue learning</v-btn>
+                            <v-btn color="primary" variant="text">{{ e.completed_at ? 'Review' : 'Continue learning' }}</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>

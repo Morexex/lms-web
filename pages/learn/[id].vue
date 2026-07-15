@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Lesson } from '~/types/learning'
+import type { LearnLesson } from '~/types/learning'
 
 definePageMeta({ middleware: 'auth' })
 
 const courseId = useRoute().params.id as string
 const { data: curriculum, isLoading } = useLearnCurriculum(courseId)
 const enroll = useEnroll()
+const complete = useCompleteLesson(courseId)
 const { message: enrollError, handle: handleEnroll, reset } = useApiErrors()
 
 const selectedLessonId = ref<string | null>(null)
@@ -19,9 +20,15 @@ watchEffect(() => {
     }
 })
 
-function canOpen(l: Lesson): boolean {
+function canOpen(l: LearnLesson): boolean {
     return (curriculum.value?.enrolled ?? false) || l.is_preview
 }
+
+const selectedCompleted = computed(() =>
+    curriculum.value?.sections
+        .flatMap((s) => s.lessons)
+        .find((l) => l.id === selectedLessonId.value)?.completed ?? false,
+)
 
 async function doEnroll(): Promise<void> {
     reset()
@@ -45,9 +52,18 @@ async function doEnroll(): Promise<void> {
                 <v-btn v-if="!curriculum.enrolled" color="primary" :loading="enroll.isPending.value" @click="doEnroll">
                     Enroll
                 </v-btn>
+                <v-chip v-else-if="curriculum.completed" color="success" variant="flat" prepend-icon="mdi-check-decagram">Completed</v-chip>
                 <v-chip v-else color="success" variant="tonal">Enrolled</v-chip>
             </div>
             <v-alert v-if="enrollError" type="warning" variant="tonal" density="compact" class="mb-4">{{ enrollError }}</v-alert>
+
+            <div v-if="curriculum.enrolled" class="mb-4">
+                <div class="d-flex align-center justify-space-between mb-1">
+                    <span class="text-caption text-medium-emphasis">Your progress</span>
+                    <span class="text-caption font-weight-medium">{{ curriculum.progress.percent }}%</span>
+                </div>
+                <v-progress-linear :model-value="curriculum.progress.percent" color="primary" height="8" rounded />
+            </div>
 
             <v-row>
                 <!-- Curriculum sidebar -->
@@ -64,7 +80,11 @@ async function doEnroll(): Promise<void> {
                                     @click="canOpen(l) ? (selectedLessonId = l.id) : null"
                                 >
                                     <template #prepend>
-                                        <v-icon :icon="canOpen(l) ? 'mdi-play-circle-outline' : 'mdi-lock-outline'" size="small" />
+                                        <v-icon
+                                            :icon="l.completed ? 'mdi-check-circle' : canOpen(l) ? 'mdi-play-circle-outline' : 'mdi-lock-outline'"
+                                            :color="l.completed ? 'success' : undefined"
+                                            size="small"
+                                        />
                                     </template>
                                     <template #append>
                                         <v-chip v-if="l.is_preview && !curriculum.enrolled" size="x-small" color="accent" variant="tonal">
@@ -120,6 +140,22 @@ async function doEnroll(): Promise<void> {
                             <p v-if="(lesson.blocks ?? []).length === 0" class="text-body-2 text-medium-emphasis">
                                 This lesson has no content yet.
                             </p>
+
+                            <v-divider v-if="curriculum.enrolled" class="my-4" />
+                            <div v-if="curriculum.enrolled" class="d-flex justify-end">
+                                <v-chip v-if="selectedCompleted" color="success" variant="tonal" prepend-icon="mdi-check">
+                                    Completed
+                                </v-chip>
+                                <v-btn
+                                    v-else
+                                    color="primary"
+                                    :loading="complete.isPending.value"
+                                    prepend-icon="mdi-check"
+                                    @click="selectedLessonId && complete.mutate(selectedLessonId)"
+                                >
+                                    Mark complete
+                                </v-btn>
+                            </div>
                         </template>
                         <p v-else class="text-body-2 text-medium-emphasis">Select a lesson to begin.</p>
                     </v-card>

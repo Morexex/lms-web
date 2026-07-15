@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { Ref } from 'vue'
 import type { Curriculum, Lesson } from '~/types/learning'
 
@@ -8,6 +8,16 @@ export function useLearnCurriculum(courseId: string) {
     return useQuery({
         queryKey: ['learn', courseId],
         queryFn: async (): Promise<Curriculum> => (await $api.get(`/api/v1/institution/learn/${courseId}`)).data.data,
+    })
+}
+
+export function useCompleteLesson(courseId: string) {
+    const { $api } = useNuxtApp()
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (lessonId: string) => $api.post(`/api/v1/institution/learn/${courseId}/lessons/${lessonId}/complete`),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['learn', courseId] }),
     })
 }
 

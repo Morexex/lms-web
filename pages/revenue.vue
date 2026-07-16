@@ -21,7 +21,11 @@ function fmt(iso: string | null): string {
         </v-alert>
 
         <template v-else>
-            <v-progress-linear v-if="isLoading" indeterminate color="primary" class="mb-4" />
+            <v-row v-if="isLoading" class="mb-2">
+                <v-col v-for="i in 3" :key="i" cols="12" sm="6" md="4">
+                    <v-skeleton-loader type="article" class="rounded-xl" />
+                </v-col>
+            </v-row>
 
             <v-row v-if="revenue?.by_currency.length" class="mb-2">
                 <v-col v-for="row in revenue.by_currency" :key="row.currency" cols="12" sm="6" md="4">

@@ -59,7 +59,12 @@ async function exportCsv(report: 'courses' | 'revenue'): Promise<void> {
 
         <template v-else>
             <v-alert v-if="message" type="error" variant="tonal" density="compact" class="mb-4">{{ message }}</v-alert>
-            <v-progress-linear v-if="isLoading || loadingCourses" indeterminate color="primary" class="mb-4" />
+
+            <v-row v-if="isLoading || loadingCourses" class="mb-1">
+                <v-col v-for="i in 4" :key="i" cols="6" md="3">
+                    <v-skeleton-loader type="article" class="rounded-xl" />
+                </v-col>
+            </v-row>
 
             <!-- Admin KPI cards -->
             <template v-if="isAdmin && dashboard">

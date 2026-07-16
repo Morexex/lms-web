@@ -16,7 +16,16 @@ const { message, handle, reset } = useApiErrors()
 
 const email = ref('')
 const role = ref('student')
-const roles = ['institution_admin', 'tutor', 'mentor', 'student']
+const roles = [
+    { title: 'Student', value: 'student' },
+    { title: 'Tutor', value: 'tutor' },
+    { title: 'Mentor', value: 'mentor' },
+    { title: 'Admin', value: 'institution_admin' },
+]
+
+function initials(name: string): string {
+    return name.split(' ').filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+}
 
 async function setRole(id: string, newRole: string): Promise<void> {
     reset()
@@ -48,28 +57,51 @@ async function sendInvite(): Promise<void> {
 </script>
 
 <template>
-    <div class="d-flex flex-column ga-6">
-        <h1 class="text-h4 font-weight-bold">People</h1>
+    <div class="d-flex flex-column ga-6" style="max-width: 900px">
+        <AppPageHeader title="People" subtitle="Invite, manage, and support your members" />
 
         <v-alert v-if="!institution.activeSlug" type="info" variant="tonal">
             Select or create an institution to manage its people.
         </v-alert>
 
         <template v-else>
+            <v-alert v-if="message" type="error" variant="tonal" density="compact">{{ message }}</v-alert>
+
+            <!-- Invite -->
             <v-card v-if="can('members.invite')" class="pa-6">
-                <h2 class="text-h6 font-weight-bold mb-4">Invite someone</h2>
-                <v-alert v-if="message" type="error" variant="tonal" density="compact" class="mb-4">{{ message }}</v-alert>
+                <h2 class="text-subtitle-1 font-weight-bold mb-1">
+                    <v-icon icon="mdi-email-plus-outline" size="small" class="mr-1" /> Invite someone
+                </h2>
+                <p class="text-caption text-medium-emphasis mb-4">They'll receive an email with a link to join.</p>
                 <div class="d-flex flex-wrap ga-3 align-start">
-                    <v-text-field v-model="email" label="Email" type="email" hide-details style="min-width: 240px" />
-                    <v-select v-model="role" :items="roles" label="Role" hide-details style="max-width: 200px" />
+                    <v-text-field
+                        v-model="email"
+                        label="Email"
+                        type="email"
+                        placeholder="name@example.com"
+                        hide-details
+                        style="min-width: 240px; max-width: 340px"
+                    />
+                    <v-select v-model="role" :items="roles" label="Role" hide-details style="max-width: 180px" />
                     <v-btn color="primary" size="large" :loading="invite.isPending.value" @click="sendInvite">Invite</v-btn>
                 </div>
             </v-card>
 
-            <v-card v-if="can('members.invite') && invitations?.length" class="pa-6">
-                <h2 class="text-h6 font-weight-bold mb-4">Pending invitations</h2>
-                <v-list>
-                    <v-list-item v-for="inv in invitations" :key="inv.id" :title="inv.email" :subtitle="inv.role">
+            <!-- Pending invitations -->
+            <v-card v-if="can('members.invite') && invitations?.length" class="pa-2">
+                <v-list-subheader class="font-weight-bold">
+                    PENDING INVITATIONS ({{ invitations.length }})
+                </v-list-subheader>
+                <v-list density="compact">
+                    <v-list-item v-for="inv in invitations" :key="inv.id" :title="inv.email" rounded="lg">
+                        <template #prepend>
+                            <v-avatar color="accent" variant="tonal" size="34">
+                                <v-icon icon="mdi-email-fast-outline" size="18" />
+                            </v-avatar>
+                        </template>
+                        <template #subtitle>
+                            <span class="text-capitalize">{{ inv.role.replace('_', ' ') }}</span>
+                        </template>
                         <template #append>
                             <v-btn variant="text" color="error" size="small" @click="revoke.mutate(inv.id)">Revoke</v-btn>
                         </template>
@@ -77,43 +109,44 @@ async function sendInvite(): Promise<void> {
                 </v-list>
             </v-card>
 
-            <v-card class="pa-6">
-                <h2 class="text-h6 font-weight-bold mb-4">Members</h2>
-                <v-progress-linear v-if="loadingMembers" indeterminate color="primary" />
-                <v-list v-else>
-                    <v-list-item
-                        v-for="m in members"
-                        :key="m.id"
-                        :title="m.user.name"
-                        :subtitle="m.user.email"
-                        prepend-icon="mdi-account-circle"
-                    >
+            <!-- Members -->
+            <v-card class="pa-2">
+                <v-list-subheader class="font-weight-bold">
+                    MEMBERS {{ members ? `(${members.length})` : '' }}
+                </v-list-subheader>
+
+                <div v-if="loadingMembers" class="pa-2">
+                    <v-skeleton-loader type="list-item-avatar-two-line@4" />
+                </div>
+
+                <v-list v-else lines="two">
+                    <v-list-item v-for="m in members" :key="m.id" :title="m.user.name" :subtitle="m.user.email" rounded="lg">
+                        <template #prepend>
+                            <v-avatar color="primary" variant="tonal" size="38">
+                                <span class="text-caption font-weight-bold">{{ initials(m.user.name) }}</span>
+                            </v-avatar>
+                        </template>
                         <template #append>
-                            <div class="d-flex align-center ga-2">
+                            <div class="d-flex align-center ga-2 flex-wrap justify-end">
+                                <v-chip v-if="m.status === 'suspended'" color="error" size="x-small" variant="tonal">
+                                    suspended
+                                </v-chip>
                                 <v-btn
                                     icon="mdi-message-text-outline"
                                     size="small"
                                     variant="text"
                                     color="primary"
                                     title="Message"
+                                    aria-label="Message member"
                                     :to="`/messages?to=${m.user.id}`"
                                 />
-                                <v-chip
-                                    v-if="m.status === 'suspended'"
-                                    color="error"
-                                    size="x-small"
-                                    variant="tonal"
-                                >
-                                    suspended
-                                </v-chip>
                                 <template v-if="can('members.manage')">
                                     <v-select
                                         :model-value="m.roles[0] ?? 'student'"
                                         :items="roles"
                                         density="compact"
                                         hide-details
-                                        variant="outlined"
-                                        style="max-width: 180px"
+                                        style="min-width: 150px; max-width: 160px"
                                         @update:model-value="(r) => setRole(m.id, r)"
                                     />
                                     <v-btn
@@ -123,6 +156,7 @@ async function sendInvite(): Promise<void> {
                                         variant="text"
                                         color="warning"
                                         title="Suspend"
+                                        aria-label="Suspend member"
                                         @click="act(() => suspendMember.mutateAsync(m.id))"
                                     />
                                     <v-btn
@@ -132,14 +166,16 @@ async function sendInvite(): Promise<void> {
                                         variant="text"
                                         color="success"
                                         title="Reactivate"
+                                        aria-label="Reactivate member"
                                         @click="act(() => reactivateMember.mutateAsync(m.id))"
                                     />
                                     <v-btn
-                                        icon="mdi-delete"
+                                        icon="mdi-delete-outline"
                                         size="small"
                                         variant="text"
                                         color="error"
                                         title="Remove"
+                                        aria-label="Remove member"
                                         @click="act(() => removeMember.mutateAsync(m.id))"
                                     />
                                 </template>

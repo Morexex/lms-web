@@ -24,33 +24,38 @@ async function onSubmit(data: Record<string, unknown>): Promise<void> {
 
 <template>
     <div style="max-width: 720px">
-        <v-progress-circular v-if="isLoading" indeterminate color="primary" />
+        <v-skeleton-loader v-if="isLoading" type="heading, chip, article" class="rounded-xl" />
 
         <template v-else-if="course">
-            <div class="d-flex align-center mb-6">
-                <h1 class="text-h4 font-weight-bold">Edit course</h1>
-                <v-spacer />
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-format-list-bulleted" :to="`/courses/${id}/curriculum`" class="mr-2">
-                    Curriculum
-                </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-clipboard-text" :to="`/courses/${id}/quizzes`" class="mr-2">
-                    Quizzes
-                </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-file-document-edit" :to="`/courses/${id}/assignments`" class="mr-2">
-                    Assignments
-                </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-video" :to="`/courses/${id}/live-sessions`" class="mr-2">
-                    Live
-                </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-forum" :to="`/courses/${id}/discussion`" class="mr-2">
-                    Discussion
-                </v-btn>
-                <v-btn variant="tonal" color="primary" prepend-icon="mdi-bullhorn" class="mr-3" @click="announcing = true">
-                    Announce
-                </v-btn>
-                <v-chip :color="course.status === 'published' ? 'success' : 'warning'" variant="tonal">
+            <!-- Header: identity row first, then a wrapping workspace toolbar -->
+            <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/courses" class="mb-2">All courses</v-btn>
+            <div class="d-flex align-center flex-wrap ga-3 mb-1">
+                <h1 class="text-h4 font-weight-bold mb-0">{{ course.title }}</h1>
+                <v-chip :color="course.status === 'published' ? 'success' : 'warning'" variant="tonal" size="small">
                     {{ course.status }}
                 </v-chip>
+            </div>
+            <p class="text-body-2 text-medium-emphasis mb-4">Course workspace — content, assessments, and community.</p>
+
+            <div class="d-flex flex-wrap ga-2 mb-6">
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-format-list-bulleted" :to="`/courses/${id}/curriculum`">
+                    Curriculum
+                </v-btn>
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-clipboard-text" :to="`/courses/${id}/quizzes`">
+                    Quizzes
+                </v-btn>
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-file-document-edit" :to="`/courses/${id}/assignments`">
+                    Assignments
+                </v-btn>
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-video" :to="`/courses/${id}/live-sessions`">
+                    Live
+                </v-btn>
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-forum" :to="`/courses/${id}/discussion`">
+                    Discussion
+                </v-btn>
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-bullhorn" @click="announcing = true">
+                    Announce
+                </v-btn>
             </div>
 
             <v-alert v-if="saved" type="success" variant="tonal" density="compact" class="mb-4">Saved.</v-alert>

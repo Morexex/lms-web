@@ -44,12 +44,17 @@ function fmt(iso: string | null): string {
                     </v-card>
                 </v-col>
             </v-row>
+            <!-- True empty state only when there are no orders at all;
+                 pending-only orders get a gentler note above the table. -->
             <AppEmptyState
-                v-else-if="!isLoading"
+                v-else-if="!isLoading && !orders?.length"
                 icon="mdi-cash-multiple"
                 title="No revenue yet"
                 description="Paid course orders will show up here."
             />
+            <v-alert v-else-if="!isLoading" type="info" variant="tonal" density="compact" class="mb-2">
+                No completed payments yet — pending orders are listed below and count once paid.
+            </v-alert>
 
             <div v-if="orders?.length" class="text-subtitle-2 font-weight-bold mt-4 mb-2">Orders</div>
             <v-card v-if="orders?.length">

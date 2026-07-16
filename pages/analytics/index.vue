@@ -69,10 +69,10 @@ async function exportCsv(report: 'courses' | 'revenue'): Promise<void> {
             <!-- Admin KPI cards -->
             <template v-if="isAdmin && dashboard">
                 <v-row class="mb-1">
-                    <v-col cols="6" md="3"><AppStatCard label="Enrollments" :value="dashboard.enrollments" icon="mdi-account-school" /></v-col>
-                    <v-col cols="6" md="3"><AppStatCard label="Completions" :value="dashboard.completions" icon="mdi-check-decagram" color="success" /></v-col>
-                    <v-col cols="6" md="3"><AppStatCard label="Completion rate" :value="`${dashboard.completion_rate}%`" icon="mdi-chart-arc" color="secondary" /></v-col>
-                    <v-col cols="6" md="3"><AppStatCard label="Active learners (30d)" :value="dashboard.active_learners" icon="mdi-account-clock" color="accent" /></v-col>
+                    <v-col cols="6" md="3"><AppStatCard label="Enrollments" :value="dashboard.enrollments" icon="mdi-account-school" class="h-100" /></v-col>
+                    <v-col cols="6" md="3"><AppStatCard label="Completions" :value="dashboard.completions" icon="mdi-check-decagram" color="success" class="h-100" /></v-col>
+                    <v-col cols="6" md="3"><AppStatCard label="Completion rate" :value="`${dashboard.completion_rate}%`" icon="mdi-chart-arc" color="secondary" class="h-100" /></v-col>
+                    <v-col cols="6" md="3"><AppStatCard label="Active (30d)" :value="dashboard.active_learners" icon="mdi-account-clock" color="accent" class="h-100" /></v-col>
                 </v-row>
 
                 <div v-if="dashboard.revenue.by_currency.length" class="text-subtitle-2 font-weight-bold mb-2">Revenue</div>

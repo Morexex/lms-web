@@ -6,6 +6,11 @@ export default defineNuxtConfig({
 
     components: [{ path: '~/components', pathPrefix: false }],
 
+    app: {
+        // Gentle fade+rise between pages — fast enough to never feel slow.
+        pageTransition: { name: 'page', mode: 'out-in' },
+    },
+
     imports: {
         dirs: ['composables/**'],   // auto-import nested composables (composables/api/…)
     },
@@ -88,6 +93,16 @@ export default defineNuxtConfig({
                 VTextField: { variant: 'outlined', rounded: 'lg', color: 'primary' },
                 VSelect: { variant: 'outlined', rounded: 'lg', color: 'primary' },
                 VTextarea: { variant: 'outlined', rounded: 'lg', color: 'primary' },
+                VAutocomplete: { variant: 'outlined', rounded: 'lg', color: 'primary' },
+                VCombobox: { variant: 'outlined', rounded: 'lg', color: 'primary' },
+                VFileInput: { variant: 'outlined', rounded: 'lg', color: 'primary' },
+                VAlert: { rounded: 'lg' },
+                VSwitch: { color: 'primary', inset: true },
+                VTabs: { color: 'primary' },
+                VProgressLinear: { rounded: true },
+                VMenu: { transition: 'slide-y-transition' },
+                VDialog: { transition: 'dialog-bottom-transition' },
+                VTooltip: { location: 'top' },
             },
         },
     },

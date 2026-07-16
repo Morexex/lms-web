@@ -48,6 +48,8 @@ async function resend() {
             </p>
         </v-card>
 
+        <GamificationWidget />
+
         <UpcomingSessions />
 
         <v-card class="pa-6">

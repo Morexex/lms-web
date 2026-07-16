@@ -10,6 +10,9 @@ export const useAuthStore = defineStore('auth', () => {
     const isAuthenticated = computed(() => user.value !== null)
     const isVerified = computed(() => user.value?.email_verified === true)
     const isImpersonating = computed(() => impersonator.value !== null)
+    const isPlatformAdmin = computed(() =>
+        (user.value?.roles ?? []).some((role) => role === 'super_admin' || role === 'platform_admin'),
+    )
 
     function setSession(payload: SessionPayload): void {
         accessToken.value = payload.access_token
@@ -109,6 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         isVerified,
         isImpersonating,
+        isPlatformAdmin,
         setSession,
         clear,
         login,

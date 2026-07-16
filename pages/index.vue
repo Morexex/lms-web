@@ -10,6 +10,36 @@ useSeoMeta({
 
 const { isDark, toggle } = useAppTheme()
 
+// Real product in the shop window — published courses across institutions.
+const { data: shop } = usePublicCourses()
+const activeCategory = ref('All')
+const categories = computed(() => {
+    const names = new Set((shop.value?.courses ?? []).map((c) => c.category).filter((c): c is string => Boolean(c)))
+    return ['All', ...names]
+})
+const shownCourses = computed(() =>
+    (shop.value?.courses ?? [])
+        .filter((c) => activeCategory.value === 'All' || c.category === activeCategory.value)
+        .slice(0, 8),
+)
+
+const gradients = [
+    'linear-gradient(120deg, #0F766E, #134E4A)',
+    'linear-gradient(120deg, #1D4ED8, #1E3A8A)',
+    'linear-gradient(120deg, #0F766E, #1D4ED8)',
+    'linear-gradient(120deg, #B45309, #92400E)',
+]
+function coverGradient(title: string): string {
+    return gradients[title.length % gradients.length]!
+}
+
+function coursePrice(c: { is_free: boolean; price_amount: number | null; price_currency: string | null }): string {
+    if (c.is_free || c.price_amount === null || !c.price_currency) return 'Free'
+    return formatMoney(c.price_amount, c.price_currency)
+}
+
+const trust = ['Verifiable certificates', 'M-Pesa, Stripe & Paystack', 'Mentors included'] as const
+
 const features = [
     {
         icon: 'mdi-book-open-page-variant',
@@ -97,13 +127,18 @@ const forInstitutions = [
                                 Courses, verifiable certificates, mentors, and a professional network —
                                 everything a learner needs, in one calm place.
                             </p>
-                            <div class="d-flex flex-wrap ga-3">
+                            <div class="d-flex flex-wrap ga-3 mb-6">
                                 <v-btn to="/auth/register" color="primary" size="large" append-icon="mdi-arrow-right">
                                     Start learning free
                                 </v-btn>
                                 <v-btn to="/auth/login" variant="outlined" color="primary" size="large">
                                     I have an account
                                 </v-btn>
+                            </div>
+                            <div class="d-flex flex-wrap ga-4">
+                                <span v-for="item in trust" :key="item" class="d-flex align-center ga-1 text-body-2 text-medium-emphasis">
+                                    <v-icon icon="mdi-check-circle" color="success" size="18" /> {{ item }}
+                                </span>
                             </div>
                         </v-col>
 
@@ -135,6 +170,97 @@ const forInstitutions = [
                                     </div>
                                 </v-card>
                             </div>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </section>
+
+            <!-- ============ Live stats band ============ -->
+            <section v-if="shop && shop.stats.courses > 0" class="py-8" style="background: rgba(15, 118, 110, 0.05)">
+                <v-container>
+                    <v-row class="text-center">
+                        <v-col cols="4">
+                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.courses }}</div>
+                            <div class="text-body-2 text-medium-emphasis">published course{{ shop.stats.courses === 1 ? '' : 's' }}</div>
+                        </v-col>
+                        <v-col cols="4">
+                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.institutions }}</div>
+                            <div class="text-body-2 text-medium-emphasis">institution{{ shop.stats.institutions === 1 ? '' : 's' }}</div>
+                        </v-col>
+                        <v-col cols="4">
+                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.learners }}</div>
+                            <div class="text-body-2 text-medium-emphasis">learner{{ shop.stats.learners === 1 ? '' : 's' }}</div>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </section>
+
+            <!-- ============ Course showcase (real product) ============ -->
+            <section v-if="shownCourses.length" class="py-14">
+                <v-container>
+                    <div class="d-flex align-center flex-wrap ga-3 mb-2">
+                        <div>
+                            <h2 class="font-heading text-h4 font-weight-bold mb-1">Explore real courses</h2>
+                            <p class="text-body-1 text-medium-emphasis mb-0">Live right now, from institutions on LUMEN.</p>
+                        </div>
+                        <v-spacer />
+                        <v-btn to="/auth/register" variant="text" color="primary" append-icon="mdi-arrow-right">
+                            Join to enroll
+                        </v-btn>
+                    </div>
+
+                    <!-- Category pills -->
+                    <div class="d-flex flex-wrap ga-2 my-5">
+                        <v-chip
+                            v-for="cat in categories"
+                            :key="cat"
+                            :color="activeCategory === cat ? 'primary' : undefined"
+                            :variant="activeCategory === cat ? 'flat' : 'tonal'"
+                            class="font-weight-medium"
+                            @click="activeCategory = cat"
+                        >
+                            {{ cat }}
+                        </v-chip>
+                    </div>
+
+                    <v-row>
+                        <v-col v-for="c in shownCourses" :key="c.title" cols="12" sm="6" md="3">
+                            <v-card to="/auth/register" class="h-100 d-flex flex-column">
+                                <div class="position-relative">
+                                    <div
+                                        class="d-flex align-center justify-center"
+                                        :style="{ height: '110px', background: coverGradient(c.title) }"
+                                    >
+                                        <v-icon icon="mdi-book-open-page-variant" color="rgba(255,255,255,.85)" size="36" />
+                                    </div>
+                                    <v-chip
+                                        size="x-small"
+                                        variant="flat"
+                                        color="surface"
+                                        class="position-absolute font-weight-medium text-capitalize"
+                                        style="top: 8px; left: 8px"
+                                    >
+                                        {{ c.level }}
+                                    </v-chip>
+                                </div>
+                                <v-card-item class="pb-0">
+                                    <div class="text-caption text-primary font-weight-medium">{{ c.institution }}</div>
+                                    <v-card-title class="text-body-2 font-weight-bold px-0" style="white-space: normal; line-height: 1.35">
+                                        {{ c.title }}
+                                    </v-card-title>
+                                </v-card-item>
+                                <v-card-text class="text-caption text-medium-emphasis flex-grow-1 pt-1 pb-2">
+                                    {{ c.summary }}
+                                </v-card-text>
+                                <v-divider />
+                                <v-card-actions class="px-4 py-2" style="min-height: 0">
+                                    <span class="text-body-2 font-weight-bold" :class="c.is_free ? 'text-success' : 'text-primary'">
+                                        {{ coursePrice(c) }}
+                                    </span>
+                                    <v-spacer />
+                                    <span v-if="c.category" class="text-caption text-medium-emphasis">{{ c.category }}</span>
+                                </v-card-actions>
+                            </v-card>
                         </v-col>
                     </v-row>
                 </v-container>

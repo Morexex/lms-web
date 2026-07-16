@@ -14,6 +14,7 @@ const { defineField, handleSubmit, setErrors, errors } = useForm({
 })
 const [email] = defineField('email')
 const [password] = defineField('password')
+const showPassword = ref(false)
 
 const onSubmit = handleSubmit(async (values) => {
     loading.value = true
@@ -39,8 +40,25 @@ const onSubmit = handleSubmit(async (values) => {
         <v-alert v-if="message" type="error" variant="tonal" density="compact" class="mb-4">{{ message }}</v-alert>
 
         <v-form @submit.prevent="onSubmit">
-            <v-text-field v-model="email" label="Email" type="email" autocomplete="email" :error-messages="errors.email" />
-            <v-text-field v-model="password" label="Password" type="password" autocomplete="current-password" :error-messages="errors.password" class="mt-2" />
+            <v-text-field
+                v-model="email"
+                label="Email"
+                type="email"
+                autocomplete="email"
+                prepend-inner-icon="mdi-email-outline"
+                :error-messages="errors.email"
+            />
+            <v-text-field
+                v-model="password"
+                label="Password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                prepend-inner-icon="mdi-lock-outline"
+                :append-inner-icon="showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                :error-messages="errors.password"
+                class="mt-2"
+                @click:append-inner="showPassword = !showPassword"
+            />
 
             <div class="d-flex justify-end mt-1 mb-4">
                 <NuxtLink to="/auth/forgot-password" class="text-body-2 text-secondary text-decoration-none">Forgot password?</NuxtLink>

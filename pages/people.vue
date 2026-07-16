@@ -187,3 +187,18 @@ async function sendInvite(): Promise<void> {
         </template>
     </div>
 </template>
+
+<style scoped>
+/* On phones the role select + actions drop below the identity instead of
+   squeezing beside it. */
+@media (max-width: 700px) {
+    :deep(.v-list-item) {
+        flex-wrap: wrap;
+    }
+    :deep(.v-list-item__append) {
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 8px;
+    }
+}
+</style>

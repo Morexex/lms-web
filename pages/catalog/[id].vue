@@ -80,7 +80,7 @@ const included = [
 
             <!-- Sticky enrollment card -->
             <v-col cols="12" md="4">
-                <div style="position: sticky; top: 88px">
+                <div class="enroll-card">
                     <v-card class="pa-6">
                         <div class="d-flex align-baseline ga-2 mb-4">
                             <span class="text-h4 font-weight-bold" :class="course.is_free ? 'text-success' : 'text-primary'">
@@ -125,3 +125,13 @@ const included = [
         />
     </div>
 </template>
+
+<style scoped>
+/* Sticky only beside the content — never when stacked on mobile. */
+@media (min-width: 960px) {
+    .enroll-card {
+        position: sticky;
+        top: 88px;
+    }
+}
+</style>

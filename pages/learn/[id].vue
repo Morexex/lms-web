@@ -99,7 +99,7 @@ async function doEnroll(): Promise<void> {
             <v-row>
                 <!-- Curriculum sidebar (sticky on desktop) -->
                 <v-col cols="12" md="4">
-                    <v-card style="position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto">
+                    <v-card class="curriculum-sidebar">
                         <v-list density="compact" nav>
                             <template v-for="section in curriculum.sections" :key="section.id">
                                 <v-list-subheader class="font-weight-bold d-flex">
@@ -297,6 +297,17 @@ async function doEnroll(): Promise<void> {
 </template>
 
 <style scoped>
+/* Sticky only where the sidebar sits beside the content — when stacked on
+   mobile it must scroll away naturally. */
+@media (min-width: 960px) {
+    .curriculum-sidebar {
+        position: sticky;
+        top: 88px;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+    }
+}
+
 .embed-wrap {
     position: relative;
     padding-bottom: 56.25%;

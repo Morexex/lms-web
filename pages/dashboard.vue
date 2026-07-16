@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
+
 definePageMeta({ middleware: 'auth' })
 
 const auth = useAuthStore()
 const institution = useInstitutionStore()
+const { xs } = useDisplay()
 
 // --- Email verification (preserved behaviour) ---
 const resent = ref(false)
@@ -101,7 +104,14 @@ function fmtDate(iso: string | null): string {
                                 Pick up right where you left off.
                             </p>
                         </div>
-                        <v-btn color="accent" variant="flat" size="large" append-icon="mdi-arrow-right" class="font-weight-bold">
+                        <v-btn
+                            color="accent"
+                            variant="flat"
+                            size="large"
+                            append-icon="mdi-arrow-right"
+                            class="font-weight-bold"
+                            :block="xs"
+                        >
                             Resume
                         </v-btn>
                     </div>

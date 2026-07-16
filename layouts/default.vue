@@ -44,6 +44,7 @@ async function signOut(): Promise<void> {
                             <v-list-item to="/courses" prepend-icon="mdi-bookshelf" title="Manage courses" />
                             <v-list-item to="/orders" prepend-icon="mdi-receipt-text" title="My orders" />
                             <v-list-item to="/revenue" prepend-icon="mdi-cash-multiple" title="Revenue" />
+                            <v-list-item to="/analytics" prepend-icon="mdi-chart-box" title="Analytics" />
                             <v-list-item to="/announcements" prepend-icon="mdi-bullhorn" title="Announcements" />
                             <v-list-item to="/people" prepend-icon="mdi-account-group" title="People" />
                             <v-list-item to="/profile" prepend-icon="mdi-account" title="Profile" />

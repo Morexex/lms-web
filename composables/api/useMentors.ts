@@ -31,13 +31,23 @@ export function useMentorSlots(profileId: string, serviceId: Ref<string | null>,
     })
 }
 
+export interface BookingResult {
+    // Free bookings return the Booking directly; paid ones wrap it with a checkout.
+    booking?: Booking
+    checkout?: { order_id: string; redirect_url: string | null; instructions: string | null } | null
+    status?: string
+    id?: string
+}
+
 export function useBookSession(profileId: string) {
     const { $api } = useNuxtApp()
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (payload: { service_id: string; starts_at: string; mentee_timezone: string }): Promise<Booking> =>
-            (await $api.post(`/api/v1/mentors/${profileId}/bookings`, payload)).data.data,
+        mutationFn: async (payload: { service_id: string; starts_at: string; mentee_timezone: string }): Promise<BookingResult> =>
+            (await $api.post(`/api/v1/mentors/${profileId}/bookings`, payload, {
+                headers: { 'Idempotency-Key': crypto.randomUUID() },
+            })).data.data,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sessions'] })
             queryClient.invalidateQueries({ queryKey: ['slots', profileId] })

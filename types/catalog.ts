@@ -17,6 +17,7 @@ export interface Course {
     is_free: boolean
     price_amount: number | null
     price_currency: string | null
+    prices?: Array<{ currency: string; amount: number }>
     category: { id: string; name: string } | null
     published_at: string | null
 }

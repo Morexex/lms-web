@@ -5,8 +5,22 @@ const id = useRoute().params.id as string
 const { data: course, isLoading, isError } = useCatalogCourse(id)
 const enroll = useEnroll()
 const { message: enrollMessage, handle: handleEnroll, reset } = useApiErrors()
+const buying = ref(false)
+
+const priceOptions = computed(() => {
+    if (!course.value || course.value.is_free) return []
+    if (course.value.prices?.length) return course.value.prices
+    if (course.value.price_currency && course.value.price_amount !== null) {
+        return [{ currency: course.value.price_currency, amount: course.value.price_amount }]
+    }
+    return []
+})
 
 async function doEnroll(): Promise<void> {
+    if (course.value && !course.value.is_free) {
+        buying.value = true
+        return
+    }
     reset()
     try {
         await enroll.mutateAsync(id)
@@ -43,8 +57,16 @@ async function doEnroll(): Promise<void> {
 
             <v-alert v-if="enrollMessage" type="warning" variant="tonal" density="compact" class="mb-3">{{ enrollMessage }}</v-alert>
             <v-btn color="primary" size="large" :loading="enroll.isPending.value" @click="doEnroll">
-                {{ course.is_free ? 'Enroll for free' : 'Enroll' }}
+                {{ course.is_free ? 'Enroll for free' : 'Buy this course' }}
             </v-btn>
+
+            <CheckoutDialog
+                v-if="buying"
+                :course-id="id"
+                :title="course.title"
+                :prices="priceOptions"
+                @close="buying = false"
+            />
         </template>
     </div>
 </template>

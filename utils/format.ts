@@ -14,3 +14,8 @@ export function formatPrice(course: Pick<Course, 'is_free' | 'price_amount' | 'p
 export function courseLevelLabel(level: string): string {
     return level === 'all_levels' ? 'All levels' : level.charAt(0).toUpperCase() + level.slice(1)
 }
+
+/** Format an integer minor-unit amount (e.g. cents) with its ISO currency. */
+export function formatMoney(amount: number, currency: string): string {
+    return `${currency} ${(amount / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}

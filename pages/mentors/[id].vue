@@ -9,6 +9,7 @@ const { message, handle, reset } = useApiErrors()
 const viewerTz = Intl.DateTimeFormat().resolvedOptions().timeZone
 const selectedService = ref<string | null>(null)
 const booked = ref(false)
+const payInstructions = ref('')
 
 function priceLabel(s: { is_free: boolean; price_currency: string | null; price_amount: number | null }): string {
     return s.is_free ? 'Free' : `${s.price_currency} ${s.price_amount}`
@@ -18,10 +19,19 @@ async function pick(startsAt: string): Promise<void> {
     if (!selectedService.value) return
     reset()
     booked.value = false
+    payInstructions.value = ''
     try {
-        await book.mutateAsync({ service_id: selectedService.value, starts_at: startsAt, mentee_timezone: viewerTz })
-        booked.value = true
+        const result = await book.mutateAsync({ service_id: selectedService.value, starts_at: startsAt, mentee_timezone: viewerTz })
         selectedService.value = null
+        if (result.checkout?.redirect_url) {
+            await navigateTo(result.checkout.redirect_url, { external: true })
+            return
+        }
+        if (result.checkout?.instructions) {
+            payInstructions.value = result.checkout.instructions
+            return
+        }
+        booked.value = true
     } catch (error) {
         handle(error)
     }
@@ -45,6 +55,9 @@ async function pick(startsAt: string): Promise<void> {
 
             <v-alert v-if="booked" type="success" variant="tonal" density="compact" class="mb-4">
                 Session booked! Find it under <NuxtLink to="/mentorship/sessions">My sessions</NuxtLink>.
+            </v-alert>
+            <v-alert v-if="payInstructions" type="info" variant="tonal" density="compact" class="mb-4">
+                {{ payInstructions }} Track it under <NuxtLink to="/orders">Orders</NuxtLink>.
             </v-alert>
             <v-alert v-if="message" type="error" variant="tonal" density="compact" class="mb-4">{{ message }}</v-alert>
 

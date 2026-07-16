@@ -6,10 +6,9 @@ export default defineNuxtConfig({
 
     components: [{ path: '~/components', pathPrefix: false }],
 
-    app: {
-        // Gentle fade+rise between pages — fast enough to never feel slow.
-        pageTransition: { name: 'page', mode: 'out-in' },
-    },
+    // NOTE: no pageTransition — Vue transitions around async pages can freeze
+    // mid-fade (pages stuck half-transparent after client-side navigation).
+    // Motion lives in pure CSS (hover/press) where it can't break rendering.
 
     imports: {
         dirs: ['composables/**'],   // auto-import nested composables (composables/api/…)

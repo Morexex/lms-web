@@ -40,6 +40,12 @@ function coursePrice(c: { is_free: boolean; price_amount: number | null; price_c
 
 const trust = ['Verifiable certificates', 'M-Pesa, Stripe & Paystack', 'Mentors included'] as const
 
+const stats = computed(() => [
+    { icon: 'mdi-book-open-page-variant', value: shop.value?.stats.courses ?? 0, label: 'published courses' },
+    { icon: 'mdi-domain', value: shop.value?.stats.institutions ?? 0, label: 'institutions' },
+    { icon: 'mdi-account-group', value: shop.value?.stats.learners ?? 0, label: 'learners growing' },
+])
+
 const features = [
     {
         icon: 'mdi-book-open-page-variant',
@@ -80,9 +86,9 @@ const features = [
 ] as const
 
 const steps = [
-    { n: 1, title: 'Join your institution', text: 'Accept an invitation or sign up and pick your academy.' },
-    { n: 2, title: 'Learn at your pace', text: 'Courses, quizzes, assignments, and live sessions — on any device.' },
-    { n: 3, title: 'Get certified & grow', text: 'Earn verifiable certificates, meet mentors, and grow your network.' },
+    { n: 1, icon: 'mdi-account-plus', title: 'Join your institution', text: 'Accept an invitation or sign up and pick your academy.' },
+    { n: 2, icon: 'mdi-play-circle', title: 'Learn at your pace', text: 'Courses, quizzes, assignments, and live sessions — on any device.' },
+    { n: 3, icon: 'mdi-trophy', title: 'Get certified & grow', text: 'Earn verifiable certificates, meet mentors, and grow your network.' },
 ] as const
 
 const forInstitutions = [
@@ -112,22 +118,21 @@ const forInstitutions = [
 
         <v-main class="bg-background">
             <!-- ============ Hero ============ -->
-            <section
-                class="position-relative"
-                style="background: radial-gradient(1100px 500px at 70% -10%, rgba(15, 118, 110, 0.14), transparent 70%)"
-            >
-                <v-container class="py-16">
+            <section class="position-relative overflow-hidden">
+                <div class="aurora aurora--teal" aria-hidden="true" />
+                <div class="aurora aurora--blue" aria-hidden="true" />
+                <v-container class="py-16 position-relative" style="z-index: 1">
                     <v-row align="center">
                         <v-col cols="12" md="6">
-                            <p class="text-overline text-primary font-weight-bold mb-2">ONE LEARNING ECOSYSTEM</p>
-                            <h1 class="font-heading text-h3 text-md-h2 font-weight-bold mb-4" style="line-height: 1.1">
-                                Learn. Grow.<br>Connect.
+                            <p v-reveal class="text-overline text-primary font-weight-bold mb-2">ONE LEARNING ECOSYSTEM</p>
+                            <h1 v-reveal="80" class="font-heading text-h3 text-md-h2 font-weight-bold mb-4" style="line-height: 1.08">
+                                Learn. Grow.<br><span class="gradient-text">Connect.</span>
                             </h1>
-                            <p class="text-h6 font-weight-regular text-medium-emphasis mb-6" style="max-width: 34rem">
+                            <p v-reveal="160" class="text-h6 font-weight-regular text-medium-emphasis mb-6" style="max-width: 34rem">
                                 Courses, verifiable certificates, mentors, and a professional network —
                                 everything a learner needs, in one calm place.
                             </p>
-                            <div class="d-flex flex-wrap ga-3 mb-6">
+                            <div v-reveal="240" class="d-flex flex-wrap ga-3 mb-6">
                                 <v-btn to="/auth/register" color="primary" size="large" append-icon="mdi-arrow-right">
                                     Start learning free
                                 </v-btn>
@@ -135,40 +140,53 @@ const forInstitutions = [
                                     I have an account
                                 </v-btn>
                             </div>
-                            <div class="d-flex flex-wrap ga-4">
+                            <div v-reveal="320" class="d-flex flex-wrap ga-4">
                                 <span v-for="item in trust" :key="item" class="d-flex align-center ga-1 text-body-2 text-medium-emphasis">
                                     <v-icon icon="mdi-check-circle" color="success" size="18" /> {{ item }}
                                 </span>
                             </div>
                         </v-col>
 
-                        <!-- Illustration built from the product's own primitives -->
+                        <!-- Illustration built from the product's own primitives.
+                             Reveal on the wrapper, idle-float on the inner layer — no transform clash. -->
                         <v-col cols="12" md="6" class="d-none d-md-block">
-                            <div class="position-relative" style="height: 360px">
-                                <v-card class="pa-5 position-absolute" style="top: 8%; left: 6%; width: 300px">
-                                    <p class="text-caption text-medium-emphasis mb-1">CONTINUE LEARNING</p>
-                                    <p class="text-body-1 font-weight-bold mb-3">Data Analytics Fundamentals</p>
-                                    <v-progress-linear model-value="72" color="primary" height="8" rounded class="mb-1" />
-                                    <span class="text-caption text-medium-emphasis">72% complete</span>
-                                </v-card>
-                                <v-card class="pa-4 position-absolute" style="top: 48%; left: 32%; width: 280px">
-                                    <div class="d-flex align-center ga-3">
-                                        <v-avatar color="accent" variant="tonal"><v-icon icon="mdi-certificate" /></v-avatar>
-                                        <div>
-                                            <p class="text-body-2 font-weight-bold mb-0">Certificate earned</p>
-                                            <span class="text-caption text-medium-emphasis">Verified · LUM-8F2K</span>
-                                        </div>
+                            <div class="position-relative" style="height: 380px">
+                                <div v-reveal="200" class="position-absolute" style="top: 6%; left: 6%; width: 300px">
+                                    <div class="float-card float-card--1">
+                                        <v-card class="pa-5">
+                                            <p class="text-caption text-medium-emphasis mb-1">CONTINUE LEARNING</p>
+                                            <p class="text-body-1 font-weight-bold mb-3">Data Analytics Fundamentals</p>
+                                            <v-progress-linear model-value="72" color="primary" height="8" rounded class="mb-1" />
+                                            <span class="text-caption text-medium-emphasis">72% complete</span>
+                                        </v-card>
                                     </div>
-                                </v-card>
-                                <v-card class="pa-4 position-absolute" style="top: 74%; left: 10%; width: 240px">
-                                    <div class="d-flex align-center ga-3">
-                                        <v-avatar color="error" variant="tonal"><v-icon icon="mdi-fire" /></v-avatar>
-                                        <div>
-                                            <p class="text-body-2 font-weight-bold mb-0">12-day streak</p>
-                                            <span class="text-caption text-medium-emphasis">Keep it alive!</span>
-                                        </div>
+                                </div>
+                                <div v-reveal="360" class="position-absolute" style="top: 46%; left: 32%; width: 280px">
+                                    <div class="float-card float-card--2">
+                                        <v-card class="pa-4">
+                                            <div class="d-flex align-center ga-3">
+                                                <v-avatar color="accent" variant="tonal"><v-icon icon="mdi-certificate" /></v-avatar>
+                                                <div>
+                                                    <p class="text-body-2 font-weight-bold mb-0">Certificate earned</p>
+                                                    <span class="text-caption text-medium-emphasis">Verified · LUM-8F2K</span>
+                                                </div>
+                                            </div>
+                                        </v-card>
                                     </div>
-                                </v-card>
+                                </div>
+                                <div v-reveal="520" class="position-absolute" style="top: 74%; left: 8%; width: 240px">
+                                    <div class="float-card float-card--3">
+                                        <v-card class="pa-4">
+                                            <div class="d-flex align-center ga-3">
+                                                <v-avatar color="error" variant="tonal"><v-icon icon="mdi-fire" /></v-avatar>
+                                                <div>
+                                                    <p class="text-body-2 font-weight-bold mb-0">12-day streak</p>
+                                                    <span class="text-caption text-medium-emphasis">Keep it alive!</span>
+                                                </div>
+                                            </div>
+                                        </v-card>
+                                    </div>
+                                </div>
                             </div>
                         </v-col>
                     </v-row>
@@ -176,32 +194,99 @@ const forInstitutions = [
             </section>
 
             <!-- ============ Live stats band ============ -->
-            <section v-if="shop && shop.stats.courses > 0" class="py-8" style="background: rgba(15, 118, 110, 0.05)">
+            <section v-if="shop && shop.stats.courses > 0" class="pb-14">
                 <v-container>
-                    <v-row class="text-center">
-                        <v-col cols="4">
-                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.courses }}</div>
-                            <div class="text-body-2 text-medium-emphasis">published course{{ shop.stats.courses === 1 ? '' : 's' }}</div>
+                    <v-card v-reveal class="pa-2 pa-sm-4">
+                        <v-row class="text-center" align="center">
+                            <v-col v-for="(s, i) in stats" :key="s.label" cols="12" sm="4" class="py-6 position-relative">
+                                <v-divider
+                                    v-if="i > 0"
+                                    vertical
+                                    class="d-none d-sm-block position-absolute"
+                                    style="left: 0; top: 20%; height: 60%"
+                                />
+                                <v-icon :icon="s.icon" color="primary" size="26" class="mb-2" />
+                                <div class="font-heading text-h3 font-weight-bold text-primary lh-1">
+                                    <AnimatedNumber :value="s.value" />
+                                </div>
+                                <div class="text-body-2 text-medium-emphasis mt-1 text-capitalize">{{ s.label }}</div>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-container>
+            </section>
+
+            <!-- ============ Story ============ -->
+            <section class="py-12">
+                <v-container style="max-width: 760px">
+                    <div class="text-center">
+                        <p v-reveal class="text-overline text-primary font-weight-bold mb-3">WHY LUMEN</p>
+                        <h2 v-reveal="80" class="font-heading text-h4 text-md-h3 font-weight-bold mb-4" style="line-height: 1.2">
+                            Learning shouldn't feel <span class="gradient-text">scattered</span>.
+                        </h2>
+                        <p v-reveal="160" class="text-h6 font-weight-regular text-medium-emphasis" style="line-height: 1.6">
+                            A video here, a certificate there, a mentor somewhere else. LUMEN brings the whole
+                            journey — learn, assess, certify, connect, and grow — into one calm, beautiful place,
+                            so you can focus on what matters: getting better every day.
+                        </p>
+                    </div>
+                </v-container>
+            </section>
+
+            <!-- ============ Features ============ -->
+            <section class="py-14" style="background: rgb(var(--v-theme-primary) / 0.035)">
+                <v-container>
+                    <div class="text-center mb-10">
+                        <h2 v-reveal class="font-heading text-h4 font-weight-bold mb-2">Everything learning needs</h2>
+                        <p v-reveal="80" class="text-body-1 text-medium-emphasis">From the first lesson to the job offer.</p>
+                    </div>
+                    <v-row>
+                        <v-col v-for="(f, i) in features" :key="f.title" cols="12" sm="6" md="4">
+                            <v-card v-reveal="(i % 3) * 100" class="pa-6 h-100 hover-lift">
+                                <v-avatar :color="f.color" variant="tonal" size="48" class="mb-4">
+                                    <v-icon :icon="f.icon" size="26" />
+                                </v-avatar>
+                                <h3 class="text-h6 font-weight-bold mb-2">{{ f.title }}</h3>
+                                <p class="text-body-2 text-medium-emphasis mb-0">{{ f.text }}</p>
+                            </v-card>
                         </v-col>
-                        <v-col cols="4">
-                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.institutions }}</div>
-                            <div class="text-body-2 text-medium-emphasis">institution{{ shop.stats.institutions === 1 ? '' : 's' }}</div>
-                        </v-col>
-                        <v-col cols="4">
-                            <div class="font-heading text-h4 font-weight-bold text-primary">{{ shop.stats.learners }}</div>
-                            <div class="text-body-2 text-medium-emphasis">learner{{ shop.stats.learners === 1 ? '' : 's' }}</div>
+                    </v-row>
+                </v-container>
+            </section>
+
+            <!-- ============ How it works ============ -->
+            <section class="py-14">
+                <v-container>
+                    <div class="text-center mb-10">
+                        <h2 v-reveal class="font-heading text-h4 font-weight-bold mb-2">How it works</h2>
+                        <p v-reveal="80" class="text-body-1 text-medium-emphasis">Three steps, one journey.</p>
+                    </div>
+                    <v-row class="steps-connector">
+                        <v-col v-for="(s, i) in steps" :key="s.n" cols="12" md="4" class="text-center">
+                            <div v-reveal="i * 140">
+                                <v-avatar
+                                    size="56"
+                                    class="mb-3 step-avatar text-white"
+                                    style="background: linear-gradient(135deg, #0F766E, #3B82F6)"
+                                >
+                                    <v-icon :icon="s.icon" size="26" />
+                                </v-avatar>
+                                <h3 class="text-h6 font-weight-bold mb-1">{{ s.title }}</h3>
+                                <p class="text-body-2 text-medium-emphasis mb-0" style="max-width: 20rem; margin-inline: auto">{{ s.text }}</p>
+                            </div>
                         </v-col>
                     </v-row>
                 </v-container>
             </section>
 
             <!-- ============ Course showcase (real product) ============ -->
-            <section v-if="shownCourses.length" class="py-14">
+            <section v-if="shownCourses.length" class="py-14" style="background: rgb(var(--v-theme-primary) / 0.035)">
                 <v-container>
-                    <div class="d-flex align-center flex-wrap ga-3 mb-2">
+                    <div v-reveal class="d-flex align-center flex-wrap ga-3 mb-2">
                         <div>
+                            <p class="text-overline text-primary font-weight-bold mb-1">LIVE ON LUMEN</p>
                             <h2 class="font-heading text-h4 font-weight-bold mb-1">Explore real courses</h2>
-                            <p class="text-body-1 text-medium-emphasis mb-0">Live right now, from institutions on LUMEN.</p>
+                            <p class="text-body-1 text-medium-emphasis mb-0">Published right now, by institutions on the platform.</p>
                         </div>
                         <v-spacer />
                         <v-btn to="/auth/register" variant="text" color="primary" append-icon="mdi-arrow-right">
@@ -210,7 +295,7 @@ const forInstitutions = [
                     </div>
 
                     <!-- Category pills -->
-                    <div class="d-flex flex-wrap ga-2 my-5">
+                    <div v-reveal="80" class="d-flex flex-wrap ga-2 my-5">
                         <v-chip
                             v-for="cat in categories"
                             :key="cat"
@@ -224,8 +309,8 @@ const forInstitutions = [
                     </div>
 
                     <v-row>
-                        <v-col v-for="c in shownCourses" :key="c.title" cols="12" sm="6" md="3">
-                            <v-card to="/auth/register" class="h-100 d-flex flex-column">
+                        <v-col v-for="(c, i) in shownCourses" :key="c.title" cols="12" sm="6" md="3">
+                            <v-card v-reveal="(i % 4) * 80" to="/auth/register" class="h-100 d-flex flex-column">
                                 <div class="position-relative">
                                     <div
                                         class="d-flex align-center justify-center"
@@ -266,54 +351,16 @@ const forInstitutions = [
                 </v-container>
             </section>
 
-            <!-- ============ Features ============ -->
-            <section class="py-14">
-                <v-container>
-                    <div class="text-center mb-10">
-                        <h2 class="font-heading text-h4 font-weight-bold mb-2">Everything learning needs</h2>
-                        <p class="text-body-1 text-medium-emphasis">From the first lesson to the job offer.</p>
-                    </div>
-                    <v-row>
-                        <v-col v-for="f in features" :key="f.title" cols="12" sm="6" md="4">
-                            <v-card class="pa-6 h-100 hover-lift">
-                                <v-avatar :color="f.color" variant="tonal" size="48" class="mb-4">
-                                    <v-icon :icon="f.icon" size="26" />
-                                </v-avatar>
-                                <h3 class="text-h6 font-weight-bold mb-2">{{ f.title }}</h3>
-                                <p class="text-body-2 text-medium-emphasis mb-0">{{ f.text }}</p>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </section>
-
-            <!-- ============ How it works ============ -->
-            <section class="py-14" style="background: rgba(15, 118, 110, 0.04)">
-                <v-container>
-                    <div class="text-center mb-10">
-                        <h2 class="font-heading text-h4 font-weight-bold mb-2">How it works</h2>
-                        <p class="text-body-1 text-medium-emphasis">Three steps, one journey.</p>
-                    </div>
-                    <v-row>
-                        <v-col v-for="s in steps" :key="s.n" cols="12" md="4" class="text-center">
-                            <v-avatar color="primary" size="44" class="mb-3">
-                                <span class="text-h6 font-weight-bold">{{ s.n }}</span>
-                            </v-avatar>
-                            <h3 class="text-h6 font-weight-bold mb-1">{{ s.title }}</h3>
-                            <p class="text-body-2 text-medium-emphasis mb-0" style="max-width: 20rem; margin-inline: auto">{{ s.text }}</p>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </section>
-
             <!-- ============ For institutions ============ -->
             <section class="py-14">
                 <v-container>
                     <v-card
-                        class="pa-8 pa-md-10 text-white"
-                        style="background: linear-gradient(120deg, #0F766E 0%, #115E59 60%, #134E4A 100%)"
+                        v-reveal
+                        class="pa-8 pa-md-12 text-white position-relative overflow-hidden"
+                        style="background: linear-gradient(120deg, #0F766E 0%, #115E59 55%, #0F1F2E 130%)"
                     >
-                        <v-row align="center">
+                        <div class="aurora aurora--amber" aria-hidden="true" />
+                        <v-row align="center" class="position-relative" style="z-index: 1">
                             <v-col cols="12" md="7">
                                 <p class="text-overline mb-1" style="color: #fbbf24">FOR INSTITUTIONS</p>
                                 <h2 class="font-heading text-h4 font-weight-bold mb-4">Run your academy on LUMEN</h2>
@@ -335,15 +382,26 @@ const forInstitutions = [
             </section>
 
             <!-- ============ Closing CTA ============ -->
-            <section class="py-14 text-center">
-                <v-container style="max-width: 640px">
-                    <h2 class="font-heading text-h4 font-weight-bold mb-3">Start your streak today</h2>
-                    <p class="text-body-1 text-medium-emphasis mb-6">
-                        Join learners building skills, earning certificates, and growing their careers on LUMEN.
-                    </p>
-                    <v-btn to="/auth/register" color="primary" size="x-large" append-icon="mdi-arrow-right">
-                        Get started — it's free
-                    </v-btn>
+            <section class="pb-16 pt-4">
+                <v-container>
+                    <div
+                        v-reveal
+                        class="text-center pa-10 pa-md-16 rounded-xl position-relative overflow-hidden"
+                        style="background: rgb(var(--v-theme-primary) / 0.06)"
+                    >
+                        <div class="aurora aurora--teal" aria-hidden="true" style="opacity: 0.7" />
+                        <div class="position-relative" style="z-index: 1; max-width: 620px; margin-inline: auto">
+                            <h2 class="font-heading text-h4 text-md-h3 font-weight-bold mb-3">
+                                Start your <span class="gradient-text">streak</span> today
+                            </h2>
+                            <p class="text-h6 font-weight-regular text-medium-emphasis mb-8" style="line-height: 1.5">
+                                Join learners building skills, earning certificates, and growing their careers on LUMEN.
+                            </p>
+                            <v-btn to="/auth/register" color="primary" size="x-large" append-icon="mdi-arrow-right" class="font-weight-bold">
+                                Get started — it's free
+                            </v-btn>
+                        </div>
+                    </div>
                 </v-container>
             </section>
 
@@ -365,3 +423,25 @@ const forInstitutions = [
         </v-main>
     </v-app>
 </template>
+
+<style scoped>
+/* Connector line behind the "how it works" steps (desktop only) */
+.steps-connector::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgb(var(--v-theme-primary) / 0.35), transparent);
+    z-index: 0;
+}
+@media (max-width: 959px) {
+    .steps-connector::before { display: none; }
+}
+.step-avatar {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 6px 18px rgb(15 118 110 / 0.35);
+}
+</style>

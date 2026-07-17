@@ -11,7 +11,7 @@ const shownDescription = computed(() =>
 </script>
 
 <template>
-    <div class="pa-3 rounded-lg" style="border: 1px dashed rgba(0, 0, 0, 0.2)">
+    <div class="pa-3 rounded-lg" style="border: 1px dashed rgba(var(--v-theme-on-surface), 0.2)">
         <div class="text-caption text-success text-truncate">{{ url }}</div>
         <div class="text-subtitle-2 font-weight-medium text-info text-truncate">{{ title }}</div>
         <p class="text-caption text-medium-emphasis mb-0" style="max-width: 60ch">{{ shownDescription }}</p>

@@ -22,7 +22,7 @@ function widthFor(value: number): string {
             <span class="text-caption text-medium-emphasis text-truncate" style="width: 110px; flex-shrink: 0">
                 {{ item.label }}
             </span>
-            <div class="flex-grow-1 rounded" style="height: 14px; background: rgba(0, 0, 0, 0.06)">
+            <div class="flex-grow-1 rounded" style="height: 14px; background: rgba(var(--v-theme-on-surface), 0.08)">
                 <div
                     class="rounded"
                     :style="{ width: widthFor(item.value), height: '14px', background: color, transition: 'width .3s' }"
